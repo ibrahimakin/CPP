@@ -1,0 +1,2 @@
+input_output.exe: input_output.cpp FileReader.cpp FileReader.hpp FileWriter.cpp FileWriter.hpp TerminalReader.cpp TerminalReader.hpp TerminalWriter.cpp TerminalWriter.hpp AnyReader.hpp AnyWriter.hpp
+	g++ FileReader.cpp FileWriter.cpp TerminalReader.cpp TerminalWriter.cpp input_output.cpp -o input_output.exe
