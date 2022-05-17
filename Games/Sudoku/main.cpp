@@ -585,8 +585,8 @@ void mainGame()
         colorSet(14);
         cout << " Press";
         colorSet(12);
-        cout << "[Esc]";
-        colorSet(15);
+        cout << " [Esc]";
+        colorSet(14);
         cout << " or ";
         colorSet(12);
         cout << "[P] ";
