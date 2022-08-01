@@ -136,7 +136,7 @@ void *thread_starter1(void* user_data)
     const bool found_it = bag.lookFor(6);
     bag.ensureContains(4);
 
-    cout << "Found the 6 " << found_it << endl;
+    cout << "Found the 6 -> " << found_it << endl;
     return NULL;
 }
 
@@ -161,14 +161,14 @@ int main()
         return 0;
     }
 
-    pthread_t* thread1;
+    pthread_t* thread1 = new pthread_t();
     int ret = pthread_create(thread1, 0, thread_starter1, (void*)&bag);
     if (ret != 0)
     {
         cout << "Thread1 startup failed" << endl;
         exit(EXIT_FAILURE);
     }
-    pthread_t* thread2;
+    pthread_t* thread2 = new pthread_t();;
     ret = pthread_create(thread2, 0, thread_starter2, (void*)&bag);
     if (ret != 0)
     {
@@ -183,6 +183,9 @@ int main()
 
     pthread_cancel(*thread1);
     pthread_cancel(*thread2);
+
+    delete thread1;
+    delete thread2;
 
     return 0;
 }
