@@ -60,7 +60,7 @@ void CreateThread()
     }
 
     cout << "Thread started, waiting for finish" << endl;
-    pthread_join(thread, (void **)&ret);
+    pthread_join(thread, 0);
     cout << "Thread finished, deleting " << ret << endl;
     pthread_cancel(thread);
     // pthread_exit(NULL);
@@ -82,7 +82,7 @@ void CreateThreadDoubler()
     }
 
     cout << "Thread started, waiting for finish" << endl;
-    pthread_join(thread, (void **)&ret);
+    pthread_join(thread, 0);
     cout << "Thread doubler finished, value now " << *value << endl;
     pthread_cancel(thread);
     delete value;
