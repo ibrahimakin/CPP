@@ -1,12 +1,7 @@
 #include <iostream>     // for input output.
 #include <iomanip>      // for output manipulations. (setw, right)
-#if _WIN32
 #include <windows.h>    // for colored text and other Windows function.
 #include <conio.h>      // for Getch. (get users input)
-#elif __linux__
-#include <unistd.h>
-#include <termios.h>
-#endif
 #include <cmath>        // for mathematical purpose like rouding, square root, etc.
 
 using namespace std;    // standard naming convention, to disregard std:: part in the code.
@@ -31,13 +26,9 @@ void gotoMenu(char choice);
 void colorSet(int tint);
 void gamePart(string part);
 void mainGame();
-void m_system(const char*);
 
 // OTHER FUNCTIONS
 char gameLevel();
-#if __linux__
-int getch();
-#endif
 
 // GLOBAL VARIABLES
 int level = 0;
@@ -50,23 +41,6 @@ string status;
 string sudokuPuzzle[81];
 string sudokuHighlights[81];
 string sudokuSolution[81];
-enum KEYS {
-    #if _WIN32
-    ARROW = 0,
-    DEL = 224,
-    KEYUP = 87,   // (W)
-    KEYLEFT = 65, // (A)
-    KEYDOWN = 83, // (S)
-    KEYRIGHT = 68,// (D)
-    #elif __linux__
-    ARROW = 27,
-    DEL = 10,
-    KEYUP = 65,   // (arrow)
-    KEYLEFT = 68, // (arrow)
-    KEYDOWN = 66, // (arrow)
-    KEYRIGHT = 67,// (arrow)
-    #endif
-};
 
 // MAIN PROGRAM
 int main()
@@ -75,10 +49,7 @@ int main()
     hideCursor(true);
 
     // SET TITLE
-    #if _WIN32
     SetConsoleTitle("Sudoku");
-    #elif __linux__
-    #endif
 
     // VARIBLE
     int choice;
@@ -86,7 +57,7 @@ int main()
     // DISPLAY
     while (true)
     {
-        m_system("cls");
+        system("cls");
         colorSet(4);        // DARK RED
         gamePart("line_small_left");
         colorSet(15);       // WHITE
@@ -181,7 +152,7 @@ char gameLevel()
     // DISPLAY
     do
     {
-        m_system("cls");
+        system("cls");
         colorSet(4);        // DARK RED
         gamePart("line_small_left");
         colorSet(15);
@@ -253,37 +224,6 @@ void showProgressHardMode(double final_progress)
     {
         cout << "Unfinished";
     }
-}
-
-#if __linux__
-int getch() {
-    char buf = 0;
-    struct termios old = {0};
-    if (tcgetattr(0, &old) < 0)
-        perror("tcsetattr()");
-    old.c_lflag &= ~ICANON;
-    old.c_lflag &= ~ECHO;
-    old.c_cc[VMIN] = 1;
-    old.c_cc[VTIME] = 0;
-    if (tcsetattr(0, TCSANOW, &old) < 0)
-        perror("tcsetattr ICANON");
-    if (read(0, &buf, 1) < 0)
-        perror ("read()");
-    old.c_lflag |= ICANON;
-    old.c_lflag |= ECHO;
-    if (tcsetattr(0, TCSADRAIN, &old) < 0)
-        perror ("tcsetattr ~ICANON");
-    return (buf);
-}
-#endif
-
-void m_system(const char*)
-{
-    #if _WIN32
-    system("cls");
-    #elif __linux__
-    system("clear");
-    #endif
 }
 
 // SET PUZZLE
@@ -457,7 +397,7 @@ void makePuzzle(string target, string puzzle)
 void mainGame()
 {
     // HEADER
-    m_system("cls");
+    system("cls");
     colorSet(4);            // DARK RED
     gamePart("line_small_left");
     colorSet(15);
@@ -691,12 +631,10 @@ void mainGame()
         colorSet(15);
         keyPress = 0;       // reset
         keyPress = getch(); // get number;
-        cout << " code: " << keyPress << endl;
 
-        if (keyPress == ARROW || keyPress == 224)   // If arrow keys and delete key passed
+        if (keyPress == 0 || keyPress == 224)   // If arrow keys and delete key passed
         {
             keyPress = 256 + getch();           // convert key code
-            cout << " if code: " << keyPress << endl;
             if (keyPress == 328)                // UP
             {
                 upKey();
@@ -726,23 +664,22 @@ void mainGame()
         else                                            // If other keys pressed
         {
             // MOVEMENT KEYS
-            cout << " else code: " << keyPress << endl;
-            if (keyPress == 119 || keyPress == KEYUP)        // UP (W)
+            if (keyPress == 119 || keyPress == 87)      // UP (W)
             {
                 upKey();
                 break;
             }
-            else if (keyPress == 115 || keyPress == KEYDOWN) // DOWN (S)
+            else if (keyPress == 115 || keyPress == 83) // DOWN (S)
             {
                 downKey();
                 break;
             }
-            else if (keyPress == 97 || keyPress == KEYLEFT)  // LEFT (A)
+            else if (keyPress == 97 || keyPress == 65)  // LEFT (A)
             {
                 leftKey();
                 break;
             }
-            else if (keyPress == 100 || keyPress == KEYRIGHT)// RIGHT (D)
+            else if (keyPress == 100 || keyPress == 68) // RIGHT (D)
             {
                 rightKey();
                 break;
@@ -958,7 +895,7 @@ void pauseGame()
     // DISPLAY
     do
     {
-        m_system("cls");
+        system("cls");
         colorSet(4);        // DARK RED
         gamePart("line_small_left");
         colorSet(15);
@@ -1011,7 +948,7 @@ void pauseGame()
 
 void helpSudoku(string located)
 {
-    m_system("cls");
+    system("cls");
     colorSet(4);        // DARK RED
     gamePart("line_small_left");
     colorSet(15);
@@ -1064,7 +1001,7 @@ void exitMenu()
     // DISPLAY
     do
     {
-        m_system("cls");
+        system("cls");
         colorSet(4);        // DARK RED
         gamePart("line_small_left");
         colorSet(15);
@@ -1108,23 +1045,16 @@ void exitMenu()
 
 void hideCursor(bool condition)
 {
-    #if _WIN32
     HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
     CONSOLE_CURSOR_INFO cursorInfo;
     GetConsoleCursorInfo(out, &cursorInfo);
     cursorInfo.bVisible = !condition;   // set the cursor visibility
     SetConsoleCursorInfo(out, &cursorInfo);
-    #elif __linux__
-    cout << (!condition ? "\033[?25h" : "\033[?25l");
-    #endif
 }
 
 void colorSet(int tint)
 {
-    #if _WIN32
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), tint);
-    #elif __linux__
-    #endif
 }
 
 void gamePart(string part)
