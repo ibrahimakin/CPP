@@ -201,8 +201,7 @@ thread_race_test_stack()
     
     while (st.size() > 0)
     {
-        pthread_t thread1;
-        pthread_t thread2;
+        pthread_t thread1, thread2;
 
         ThreadArguments ta1(st, "thread1", st_out);
         ThreadArguments ta2(st, "thread2", st_out);
@@ -259,11 +258,23 @@ private:
 ServiceInfo::ServiceInfo(const string& name)
     : m_name(name)
 {
+    int init_ok = pthread_mutex_init(&m_mutex, 0);
+    if (init_ok != 0)
+    {
+        cout << "Failed to init ServiceInfo" << endl;
+        return;
+    }
 }
 
 ServiceInfo::ServiceInfo(const ServiceInfo& si)
     : m_name(si.name())
 {
+    int init_ok = pthread_mutex_init(&m_mutex, 0);
+    if (init_ok != 0)
+    {
+        cout << "Failed to init ServiceInfo" << endl;
+        return;
+    }
 }
 
 void
@@ -386,6 +397,7 @@ Services::print() const
     {
         cout << "Service " << service_index << ": " << m_services[service_index]->name() << endl;
     }
+    cout << endl;
     pthread_mutex_unlock(&m_mutex);
 }
 
@@ -454,8 +466,7 @@ thread_race_test_array()
     ThreadArgs ta1(services, "Endless Marvel Movies", "Endless X-Men Movies", "Vestel TV Gold");
     ThreadArgs ta2(services, "Lannister News Channel", "Stark News Channel", "Samsung blows");
 
-    pthread_t thread1;
-    pthread_t thread2;
+    pthread_t thread1, thread2;
     int ret = pthread_create(&thread1, 0, thread_function, &ta1);
     if (ret != 0)
     {
@@ -575,6 +586,7 @@ Services::print() const
         cout << "Service " << service_index << ": " << m_services[service_index]->name() << endl;
     }
     cout << endl;
+    pthread_mutex_unlock(&m_mutex);
 }
 
 void
@@ -585,14 +597,94 @@ make_service_list(Services& services)
     services.add(ServiceInfo("Endless Marvel Movies"));
     services.add(ServiceInfo("Lannister News Channel"));
 }
+
+struct ThreadArgs
+{
+    ThreadArgs(Services& services, const char* up_target, const char* up_new, const char* erase);
+
+    ThreadArgs(const ThreadArgs&) = delete;
+    ThreadArgs& operator=(const ThreadArgs&) = delete;
+    Services& m_servives;
+    const char* m_update_target;
+    const char* m_update_new_name;
+    const char* m_erase;
+};
+
+ThreadArgs::ThreadArgs(Services& services, const char* up_target, const char* up_new, const char* erase)
+    : m_servives(services),
+      m_update_target(up_target),
+      m_update_new_name(up_new),
+      m_erase(erase)
+{
+}
+
+void*
+thread_function(void* user_arg)
+{
+    ThreadArgs& args = *(reinterpret_cast<ThreadArgs*>(user_arg));
+    Services& services = args.m_servives;
+    Services::ServiceHandle info_handle = services.find(args.m_update_target);
+    if (info_handle.get() != 0)
+    {
+        info_handle->setName(args.m_update_new_name);
+    }
+    info_handle = services.find(args.m_erase);
+    if (info_handle.get() != 0)
+    {
+        services.erase(info_handle);
+    }
+    return 0;
+}
+
+void
+thread_race_test_shared_ptr()
+{
+    Services services;
+    if (services.isInitialised() != 0)
+    {
+        cout << "Failed to init services" << endl;
+        return;
+    }
+    make_service_list(services);
+
+    cout << "Initial state:" << endl;
+    services.print();
+
+    ThreadArgs ta1(services, "Endless Marvel Movies", "Endless X-Men Movies", "Vestel TV Gold");
+    ThreadArgs ta2(services, "Lannister News Channel", "Stark News Channel", "Samsung blows");
+
+    pthread_t thread1, thread2;
+    int ret = pthread_create(&thread1, 0, thread_function, &ta1);
+    if (ret != 0)
+    {
+        cout << "Thread 1 startup failed" << endl;
+        return;
+    }
+
+    ret = pthread_create(&thread2, 0, thread_function, &ta2);
+    if (ret != 0)
+    {
+        cout << "Thread 2 startup failed" << endl;
+        return;
+    }
+
+    pthread_join(thread1, 0);
+    pthread_join(thread2, 0);
+    pthread_cancel(thread1);
+    pthread_cancel(thread2);
+
+    cout << "After processing:" << endl;
+    services.print();
+}
 } // namespace ThreadRaceSharedPtr
 
 int main()
 {
     cout << "Thread Race Stack" << endl;
-    // ThreadRaceStack::thread_race_test_stack();
+    ThreadRaceStack::thread_race_test_stack();
     cout << endl << "Thread Race Array" << endl;
     ThreadRaceArray::thread_race_test_array();
     cout << endl << "Thread Race SharedPtr" << endl;
+    ThreadRaceSharedPtr::thread_race_test_shared_ptr();
     return 0;
 }
