@@ -111,7 +111,7 @@ int main()
         colorSet(4);        // RED
         gamePart("seperator");
         colorSet(7);        // LIGHT GRAY
-        cout << "(Press the number of your choice!) ";
+        cout << "(Press the number of your choice!) " << endl;
         colorSet(15);       // WHITE
 
         // GET USER CHOICE
@@ -216,7 +216,7 @@ char gameLevel()
         colorSet(4);        // DARK RED
         gamePart("seperator");
         colorSet(7);        // LIGHT GRAY
-        cout << "(Press the number of your choice!) ";
+        cout << "(Press the number of your choice!) " << endl;
         colorSet(15);       // WHITE
 
         // GET USER CHOICE
@@ -654,7 +654,7 @@ void mainGame()
         colorSet(12);
         cout << "[P] ";
         colorSet(14);
-        cout << "to pause the game";
+        cout << "to pause the game" << endl;
     }
     else if (status == "quitted")
     {
@@ -986,7 +986,7 @@ void pauseGame()
         colorSet(4);        // DARK RED
         gamePart("seperator");
         colorSet(7);        // LIGHT GRAY
-        cout << "(Press the number of your choice!) ";
+        cout << "(Press the number of your choice!) " << endl;
         colorSet(15);       // WHITE
 
         // GET USER CHOICE
@@ -1088,7 +1088,7 @@ void exitMenu()
         colorSet(4);        // DARK RED
         gamePart("seperator");
         colorSet(7);        // LIGHT GRAY
-        cout << "(Press the number of your choice!) ";
+        cout << "(Press the number of your choice!) " << endl;
         colorSet(15);       // WHITE
 
         // GET USER CHOICE
