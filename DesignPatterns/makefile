@@ -1,3 +1,4 @@
+# Based on:
 # https://stackoverflow.com/questions/27001837/makefile-to-compile-all-cpp-files-in-all-subdirs#answer-27025822
 
 SRCDIR := .
