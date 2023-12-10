@@ -127,8 +127,7 @@ int main(int argc, char const *argv[])
     // The client should be able to send a request to any client, not just first one in the chain.
     cout << "Chain: Monkey > Squirrel > Dog\n\n";
     Client(*monkey);
-    cout << "\n";
-    cout << "Subchain: Squirrel > Dog\n\n";
+    cout << "\nSubchain: Squirrel > Dog\n\n";
     Client(*squirrel);
 
     delete monkey;
