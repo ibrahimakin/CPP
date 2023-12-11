@@ -95,8 +95,7 @@ the base interface, you can pass it any creator's subclass.
 void Client(const Creator &creator)
 {
     cout << "Client: I'm not aware of the creator's class, but it still works."
-         << endl
-         << creator.SomeOperation() << endl;
+         << endl << creator.SomeOperation() << endl;
 }
 
 // The Apllication picks a creator's type depending on the configuraiton or environment.
