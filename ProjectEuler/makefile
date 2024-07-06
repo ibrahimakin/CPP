@@ -1,31 +1,25 @@
-ifdef file
-# empty :=
-# slash := \ 
-# space := $(empty) $(empty)
-# foo := $(wildcard $(file)*.cpp)
-# bar := ${subst .cpp,,$(wildcard $(file)*.cpp)}
-# $(bar): $(foo)				# 1\ -\ Multiples\ of\ 3\ or\ 5.cpp
-# 	g++ $(wildcard $(file)*.cpp) -o $(bar)
+# Compiler
+CXX = g++
 
-#Tell make to make one .out file for each .cpp file found in the current directory
-file: $(patsubst %.cpp, %, $(wildcard $(file)*.cpp))
+# Compiler flags
+CXXFLAGS = -Wall -std=c++11
 
-#Rule how to create arbitary .out files. 
-#First state what is needed for them e.g. additional headers, .cpp files in an include folder...
-#Then the command to create the .out file, probably you want to add further options to the g++ call.
-%: %.cpp Makefile
-	g++ $< -o $@ -std=c++0x
-
-else
-
-CC=g++
-CFLAGS=-c -Wall
+# Find all .cpp files in the current directory
 SOURCES = $(wildcard *.cpp)
-EXECS = $(SOURCES:.cpp=)	# shorthand for $(patsubst pattern,replacement,text)
 
-all: $(EXECS)
+# Executable names (each source file with .out extension)
+EXECUTABLES = $(SOURCES:.cpp=.out)
 
+# Default target
+all: $(EXECUTABLES)
+
+# Rule to create each executable from the corresponding source file
+%.out: %.cpp
+	$(CXX) $(CXXFLAGS) $< -o $@
+
+# Clean target to remove generated executables
 clean:
-	rm $(EXECS)
+	rm -f $(EXECUTABLES)
 
-endif
+# Phony targets
+.PHONY: all clean
