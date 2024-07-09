@@ -62,8 +62,7 @@ int main(int argc, char const *argv[])
     cout << "\n\n";
     Adaptee *adaptee = new Adaptee;
     cout << "Client: Adaptee class has a weird interface. See, I don't understand it:" << endl;
-    cout << "Adaptee: " << adaptee->SpecificRequest() << endl
-         << endl;
+    cout << "Adaptee: " << adaptee->SpecificRequest() << endl << endl;
     cout << "Client: But I can work with it via the Adapter:" << endl;
     Adapter *adapter = new Adapter(adaptee);
     Client(adapter);
