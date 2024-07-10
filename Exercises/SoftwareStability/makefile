@@ -5,14 +5,13 @@ LD		= ld
 
 srctree		= $(PWD)/src
 
-#CFLAGS		:= -Wall -g -I$(srctree)
 CFLAGS		:= -g -I$(srctree) -Wall
 LDFLAGS		:= -static
 
 src = main.c
 obj = $(addprefix $(srctree)/, $(src:.c=.o))
 
-target = swap
+target = swap.out
 
 .PHONY: _all
 _all: $(target)

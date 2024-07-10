@@ -1,31 +1,25 @@
-# Based on:
-# https://stackoverflow.com/questions/27001837/makefile-to-compile-all-cpp-files-in-all-subdirs#answer-27025822
+# Compiler
+CXX = g++
 
-SRCDIR := .
-OBJDIR := obj
-DEPDIR := dep
+# Compiler flags
+CXXFLAGS = -Wall -std=c++11
 
-SRCS     := $(shell find $(SRCDIR) -name "*.cpp")
-OBJS     := $(SRCS:$(SRCDIR)/%.cpp=%.o)
-# DEPS     := $(SRCS:$(SRCDIR)/%.cpp=$(DEPDIR)/%.d)
-# TREE     := $(patsubst %/,%,$(dir $(OBJS)))
-CPPFLAGS  = -MMD -MP -MF $(@:$(OBJDIR)/%.o=$(DEPDIR)/%.d)
+# Find all .cpp files in the current directory and subdirectories
+SOURCES = $(shell find . -name '*.cpp')
 
-.PHONY: all clean
+# Executable names (each source file with .out extension, placed in the same directory as the source)
+EXECUTABLES = $(SOURCES:.cpp=.out)
 
-all: $(OBJS)
+# Default target
+all: $(EXECUTABLES)
 
-.SECONDEXPANSION:
-%.o: $(SRCDIR)/%.cpp | $$(@D)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $< -o $@
+# Rule to create each executable from the corresponding source file
+%.out: %.cpp
+	$(CXX) $(CXXFLAGS) $< -o $@
 
-# $(TREE): %:
-# 	mkdir -p $@
-# 	mkdir -p $(@:$(OBJDIR)%=$(DEPDIR)%)
-
+# Clean target to remove generated executables
 clean:
-	$(RM) -r $(OBJDIR) $(DEPDIR)
+	rm -f $(EXECUTABLES)
 
-ifeq "$(MAKECMDGOALS)" ""
-# -include $(DEPS)
-endif
+# Phony targets
+.PHONY: all clean
