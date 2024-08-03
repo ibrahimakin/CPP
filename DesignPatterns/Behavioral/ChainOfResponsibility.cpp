@@ -12,6 +12,7 @@ It also declares a method for executing a request.
 class Handler
 {
 public:
+    virtual ~Handler() {};
     virtual Handler *SetNext(Handler *handler) = 0;
     virtual string Handle(string request) = 0;
 };
